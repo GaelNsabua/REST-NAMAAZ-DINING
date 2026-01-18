@@ -44,5 +44,3 @@ CREATE TABLE reservation_item (
 
 CREATE INDEX idx_reservation_start ON reservation(start_time);
 CREATE INDEX idx_reservation_client ON reservation(client_id);
-CREATE INDEX idx_reservation_status ON reservation(status);
-CREATE INDEX idx_restaurant_table_status ON restaurant_table(status);

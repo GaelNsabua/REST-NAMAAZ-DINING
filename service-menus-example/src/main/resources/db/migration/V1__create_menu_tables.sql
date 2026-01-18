@@ -22,4 +22,3 @@ CREATE TABLE menu_item (
 );
 
 CREATE INDEX idx_menu_item_category ON menu_item(category_id);
-CREATE INDEX idx_menu_item_available ON menu_item(available);

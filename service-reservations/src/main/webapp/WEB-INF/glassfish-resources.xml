@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN" 
+    "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+    <jdbc-connection-pool 
+        name="ReservationsPool" 
+        res-type="javax.sql.DataSource" 
+        datasource-classname="org.postgresql.ds.PGSimpleDataSource">
+        <property name="serverName" value="db.prisma.io"/>
+        <property name="portNumber" value="5432"/>
+        <property name="databaseName" value="postgres"/>
+        <property name="user" value="9ad47282bbb89a3bee390f441b8a37c0091338c13d43dd6e95aeea4b377bc104"/>
+        <property name="password" value="sk_lltF65BBeFVW0REpO9_XJ"/>
+        <property name="ssl" value="true"/>
+        <property name="sslmode" value="require"/>
+    </jdbc-connection-pool>
+    
+    <jdbc-resource 
+        enabled="true" 
+        jndi-name="jdbc/namaaz_reservations" 
+        pool-name="ReservationsPool"/>
+</resources>

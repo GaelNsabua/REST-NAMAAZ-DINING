@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN" 
+    "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+    <jdbc-connection-pool 
+        name="MenuPool" 
+        res-type="javax.sql.DataSource" 
+        datasource-classname="org.postgresql.ds.PGSimpleDataSource">
+        <property name="serverName" value="db.prisma.io"/>
+        <property name="portNumber" value="5432"/>
+        <property name="databaseName" value="postgres"/>
+        <property name="user" value="69610a9ad49790a1cc872aa4ab648a6156e1610f614a220e523184b7e588bd51"/>
+        <property name="password" value="sk_y46DIcbEp4skbLA3T_Zrm"/>
+        <property name="ssl" value="true"/>
+        <property name="sslmode" value="require"/>
+    </jdbc-connection-pool>
+    
+    <jdbc-resource 
+        enabled="true" 
+        jndi-name="jdbc/namaaz_menu" 
+        pool-name="MenuPool"/>
+</resources>
