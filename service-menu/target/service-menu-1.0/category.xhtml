@@ -1,0 +1,43 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="pageTitle">Catégories</ui:define>
+
+    <ui:define name="content">
+        <div style="background: #1f1f1f; padding: 25px; border-radius: 8px; margin-bottom: 30px;">
+            <h:form id="catForm">
+                <h3 style="color: var(--accent)">#{categoryBean.newCategory.id == null ? 'Nouvelle Catégorie' : 'Modifier la Catégorie'}</h3>
+                <h:panelGrid columns="2" style="width: 100%">
+                    <h:outputLabel value="Nom de la catégorie" />
+                    <h:inputText value="#{categoryBean.newCategory.name}" style="width: 90%; background: #333; color: white; border: 1px solid #444; padding: 10px;" />
+                    
+                    <h:outputLabel value="Description" />
+                    <h:inputTextarea value="#{categoryBean.newCategory.description}" style="width: 90%; background: #333; color: white; border: 1px solid #444; padding: 10px;" />
+                </h:panelGrid>
+                <div style="margin-top: 15px;">
+                    <h:commandButton value="Enregistrer" action="#{categoryBean.save()}" styleClass="btn btn-add" />
+                    <h:commandButton value="Annuler" action="#{categoryBean.setNewCategory(null)}" rendered="#{categoryBean.newCategory.id != null}" style="margin-left: 10px;" />
+                </div>
+            </h:form>
+        </div>
+
+        <h:form id="listForm">
+            <h:dataTable value="#{categoryBean.categories}" var="cat">
+                <h:column><f:facet name="header">ID</f:facet>#{cat.id.toString().substring(0,8)}...</h:column>
+                <h:column><f:facet name="header">Nom</f:facet><strong>#{cat.name}</strong></h:column>
+                <h:column><f:facet name="header">Description</f:facet>#{cat.description}</h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <h:commandButton value="Modifier" action="#{categoryBean.setNewCategory(cat)}" styleClass="btn btn-edit">
+                        <f:ajax render="catForm" />
+                    </h:commandButton>
+                    <h:commandButton value="Supprimer" action="#{categoryBean.delete(cat)}" styleClass="btn btn-delete" 
+                                     onclick="return confirm('Confirmer la suppression ?')" />
+                </h:column>
+            </h:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,83 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="pageTitle">Gestion du Menu</ui:define>
+
+    <ui:define name="content">
+        <div style="background: var(--grey); padding: 25px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid var(--accent);">
+            <h:form id="itemForm">
+                <h3 style="color: var(--accent); margin-top: 0;">
+                    #{menuItemBean.newItem.id == null ? 'Ajouter un nouveau plat' : 'Modifier le plat'}
+                </h3>
+                
+                <h:panelGrid columns="4" style="width: 100%" columnClasses="label, field, label, field">
+                    <h:outputLabel value="Nom du plat :" />
+                    <h:inputText value="#{menuItemBean.newItem.name}" required="true" 
+                                 style="width: 90%; background: #333; color: white; border: 1px solid #444; padding: 8px;" />
+
+                    <h:outputLabel value="Prix (€) :" />
+                    <h:inputText value="#{menuItemBean.newItem.price}" required="true"
+                                 style="width: 90%; background: #333; color: white; border: 1px solid #444; padding: 8px;">
+                        <f:convertNumber minFractionDigits="2" />
+                    </h:inputText>
+
+                    <h:outputLabel value="Catégorie :" />
+                    <h:selectOneMenu value="#{menuItemBean.selectedCategoryId}" required="true"
+                                     style="width: 95%; background: #333; color: white; border: 1px solid #444; padding: 8px;">
+                        <f:selectItem itemLabel="-- Sélectionner --" itemValue="" />
+                        <f:selectItems value="#{menuItemBean.categories}" var="c" 
+                                       itemLabel="#{c.name}" itemValue="#{c.id.toString()}" />
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="Temps (min) :" />
+                    <h:inputText value="#{menuItemBean.newItem.prepTime}" 
+                                 style="width: 90%; background: #333; color: white; border: 1px solid #444; padding: 8px;" />
+                </h:panelGrid>
+
+                <div style="margin-top: 20px;">
+                    <h:commandButton value="Enregistrer le plat" action="#{menuItemBean.save()}" styleClass="btn btn-add" />
+                    <h:commandButton value="Annuler" action="#{menuItemBean.setNewItem(null)}" 
+                                     rendered="#{menuItemBean.newItem.id != null}"
+                                     style="margin-left: 10px; background: #444; color: white; border: none; padding: 10px 20px; border-radius: 4px;" />
+                </div>
+            </h:form>
+        </div>
+
+        <h:form id="tableForm">
+            <h:dataTable value="#{menuItemBean.menuItems}" var="item">
+                <h:column>
+                    <f:facet name="header">Plat</f:facet>
+                    <span style="font-weight: bold; color: var(--accent);">#{item.name}</span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Catégorie</f:facet>
+                    <span style="color: #bbb;">#{item.category.name}</span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Prix</f:facet>
+                    <h:outputText value="#{item.price}">
+                        <f:convertNumber type="currency" currencySymbol="€" />
+                    </h:outputText>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Statut</f:facet>
+                    <span class="badge #{item.available ? 'available' : 'unavailable'}" 
+                          style="padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; background: #{item.available ? '#1b4332' : '#641212'}; color: #{item.available ? '#8fecbb' : '#ffadad'};">
+                        #{item.available ? 'DISPONIBLE' : 'ÉPUISÉ'}
+                    </span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <h:commandButton value="Edit" action="#{menuItemBean.setNewItem(item)}" styleClass="btn btn-edit">
+                        <f:ajax render="itemForm" />
+                    </h:commandButton>
+                    <h:commandButton value="Delete" action="#{menuItemBean.delete(item)}" styleClass="btn btn-delete" 
+                                     onclick="return confirm('Supprimer ce plat définitivement ?')" />
+                </h:column>
+            </h:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+<ui:composition template="/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="pageTitle">Tableau de Bord</ui:define>
+
+    <ui:define name="content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div style="background: var(--grey); padding: 30px; border-radius: 8px; border-top: 4px solid var(--accent);">
+                <h2 style="margin: 0;">#{categoryBean.categories.size()}</h2>
+                <p style="color: #888;">Catégories Actives</p>
+                <h:link outcome="category" value="Gérer les catégories →" style="color: var(--accent); text-decoration: none; font-size: 0.9rem;" />
+            </div>
+
+            <div style="background: var(--grey); padding: 30px; border-radius: 8px; border-top: 4px solid var(--accent);">
+                <h2 style="margin: 0;">#{menuItemBean.menuItems.size()}</h2>
+                <p style="color: #888;">Plats au Menu</p>
+                <h:link outcome="menu_item" value="Voir la carte →" style="color: var(--accent); text-decoration: none; font-size: 0.9rem;" />
+            </div>
+        </div>
+
+        <div style="background: var(--grey); padding: 40px; border-radius: 8px; text-align: center; border: 1px dashed #444;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">NAMAAZ <span style="color: var(--accent);">DINING</span></h1>
+            <p style="color: #bbb; max-width: 600px; margin: 0 auto 20px;">
+                Bienvenue dans l'interface d'administration. Vous pouvez ici configurer la structure de votre menu 
+                et mettre à jour la disponibilité de vos plats en temps réel.
+            </p>
+            <h:link outcome="menu_item" styleClass="btn btn-add" style="text-decoration: none; display: inline-block;">
+                Commencer à gérer
+            </h:link>
+        </div>
+    </ui:define>
+</ui:composition>

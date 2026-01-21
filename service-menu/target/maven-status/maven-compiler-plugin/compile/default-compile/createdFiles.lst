@@ -1,0 +1,12 @@
+bean\MenuItemBean.class
+bean\CategoryBean.class
+com\namaaz\service\menu\resources\JakartaEE10Resource.class
+entities\MenuItem.class
+repository\MenuItemRepository.class
+rest\RestApplication.class
+business\MenuService.class
+repository\CategoryRepository.class
+com\namaaz\service\menu\entities\Category.class
+rest\MenuResource.class
+rest\CategoryResource.class
+com\namaaz\service\menu\JakartaRestConfiguration.class
