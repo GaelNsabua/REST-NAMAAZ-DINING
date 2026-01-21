@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN" 
+"http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+    <!-- JDBC Connection Pool -->
+    <jdbc-connection-pool 
+        name="ClientsOrdersPool" 
+        res-type="javax.sql.DataSource" 
+        datasource-classname="org.postgresql.ds.PGSimpleDataSource">
+        <property name="serverName" value="db.prisma.io"/>
+        <property name="portNumber" value="5432"/>
+        <property name="databaseName" value="postgres"/>
+        <property name="user" value="a6048137a2188aaa3241c8839a231f11828fd1a3f68bb6e58117c3c7fce98a9c"/>
+        <property name="password" value="sk_0r4fAwbWl09mA9_pfZTK0"/>
+        <property name="ssl" value="true"/>
+        <property name="sslmode" value="require"/>
+    </jdbc-connection-pool>
+    
+    <!-- JDBC Resource -->
+    <jdbc-resource 
+        enabled="true" 
+        jndi-name="jdbc/namaaz_clients_orders" 
+        pool-name="ClientsOrdersPool"/>
+</resources>

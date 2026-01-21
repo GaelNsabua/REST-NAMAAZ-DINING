@@ -1,16 +1,12 @@
 -- Migration V1 : tables Reservations
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Types ENUM recommandés
-CREATE TYPE reservation_status AS ENUM ('PENDING','CONFIRMED','CANCELLED');
-CREATE TYPE table_status AS ENUM ('FREE','RESERVED','OCCUPIED','OUT_OF_SERVICE');
-
 CREATE TABLE restaurant_table (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   table_number INT NOT NULL UNIQUE,
   seats INT NOT NULL,
   location VARCHAR(100),
-  status table_status DEFAULT 'FREE',
+  status VARCHAR(20) DEFAULT 'FREE' CHECK (status IN ('FREE','RESERVED','OCCUPIED','OUT_OF_SERVICE')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -21,7 +17,7 @@ CREATE TABLE reservation (
   num_people INT NOT NULL,
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
   end_time TIMESTAMP WITH TIME ZONE,
-  status reservation_status NOT NULL DEFAULT 'PENDING',
+  status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','CONFIRMED','CANCELLED')),
   notes TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" 
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence 
+             https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+    
+    <persistence-unit name="ClientsOrdersPU" transaction-type="JTA">
+        <jta-data-source>jdbc/namaaz_clients_orders</jta-data-source>
+        
+        <!-- Entities -->
+        <class>com.namaaz.service.clients.orders.entities.Client</class>
+        <class>com.namaaz.service.clients.orders.entities.Order</class>
+        <class>com.namaaz.service.clients.orders.entities.OrderItem</class>
+        <class>com.namaaz.service.clients.orders.entities.Payment</class>
+        <class>com.namaaz.service.clients.orders.entities.OrderStatus</class>
+        <class>com.namaaz.service.clients.orders.entities.PaymentMethod</class>
+        <class>com.namaaz.service.clients.orders.entities.PaymentStatus</class>
+        
+        <properties>
+            <!-- Ne pas générer les tables automatiquement -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            
+            <!-- Logs SQL (développement) -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

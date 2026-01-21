@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+<h:head>
+    <title><ui:insert name="title">Namaaz Dining</ui:insert></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <style>
+        .nav-link:hover {
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+        .nav-link.active {
+            background-color: rgba(220, 38, 38, 0.15);
+            font-weight: 600;
+        }
+    </style>
+</h:head>
+<h:body class="bg-gray-50 min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="fixed left-0 top-0 w-52 bg-black text-white h-screen shadow-lg overflow-y-auto">
+            <div class="p-4 border-b border-gray-800">
+                <h1 class="text-2xl font-bold text-red-600">Namaaz</h1>
+                <p class="text-xs text-gray-400">Restaurant Management</p>
+            </div>
+            
+            <nav class="mt-4">
+                <h:link outcome="/index" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/index.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-home mr-3 w-4"></i>
+                    <span class="text-sm">Tableau de bord</span>
+                </h:link>
+                
+                <div class="mt-4 px-4">
+                    <p class="text-xs uppercase text-gray-500 font-semibold mb-1">Menu</p>
+                </div>
+                <h:link outcome="/categories" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/categories.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-folder mr-3 w-4"></i>
+                    <span class="text-sm">Catégories</span>
+                </h:link>
+                <h:link outcome="/menu-items" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/menu-items.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-utensils mr-3 w-4"></i>
+                    <span class="text-sm">Articles</span>
+                </h:link>
+                
+                <div class="mt-4 px-4">
+                    <p class="text-xs uppercase text-gray-500 font-semibold mb-1">Réservations</p>
+                </div>
+                <h:link outcome="/tables" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/tables.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-chair mr-3 w-4"></i>
+                    <span class="text-sm">Tables</span>
+                </h:link>
+                
+                <div class="mt-4 px-4">
+                    <p class="text-xs uppercase text-gray-500 font-semibold mb-1">Commandes</p>
+                </div>
+                <h:link outcome="/clients" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/clients.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-users mr-3 w-4"></i>
+                    <span class="text-sm">Clients</span>
+                </h:link>
+                <h:link outcome="/orders" styleClass="nav-link flex items-center px-4 py-2 text-gray-300 hover:text-white transition-all cursor-pointer #{view.viewId == '/orders.xhtml' ? 'active' : ''}">
+                    <i class="fas fa-clipboard-list mr-3 w-4"></i>
+                    <span class="text-sm">Commandes</span>
+                </h:link>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 ml-52">
+            <!-- Top Bar -->
+            <div class="bg-white border-b border-gray-200 px-6 py-3 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <ui:insert name="pageTitle">Dashboard</ui:insert>
+                    </h2>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600">Admin</span>
+                        <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            A
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Page Content -->
+            <div class="p-6">
+                <h:messages styleClass="mb-3"/>
+                <ui:insert name="content">
+                    <!-- Page content goes here -->
+                </ui:insert>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>
