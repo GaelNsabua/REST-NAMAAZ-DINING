@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Rapports - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="reportsForm">
+            <!-- Daily Sales Report -->
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">📈 Ventes quotidiennes</h1>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="selectedDate" value="Date" styleClass="form-label" />
+                    <h:inputText id="selectedDate" 
+                                 value="#{reportBean.selectedDate}" 
+                                 styleClass="form-control"
+                                 type="date"
+                                 style="max-width: 300px;">
+                        <f:convertDateTime pattern="yyyy-MM-dd" type="localDate" />
+                        <f:ajax event="change" listener="#{reportBean.calculateDailySales()}" render="dailyStats" />
+                    </h:inputText>
+                </div>
+
+                <h:panelGroup id="dailyStats">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-value">#{reportBean.dailyOrdersCount}</div>
+                            <div class="stat-label">Commandes du jour</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                <h:outputText value="#{reportBean.dailySales}">
+                                    <f:convertNumber type="currency" currencySymbol="€" />
+                                </h:outputText>
+                            </div>
+                            <div class="stat-label">Chiffre d'affaires du jour</div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dish Profitability Report -->
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">🍽️ Rentabilité des plats (Top 10)</h1>
+                </div>
+
+                <h:dataTable value="#{reportBean.topDishes}" 
+                             var="dish"
+                             styleClass="table"
+                             rendered="#{not empty reportBean.topDishes}">
+                    <h:column>
+                        <f:facet name="header">#</f:facet>
+                        #{reportBean.topDishes.indexOf(dish) + 1}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Plat</f:facet>
+                        <strong>#{dish.dishName}</strong>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Quantité vendue</f:facet>
+                        #{dish.totalQuantity} unités
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Prix moyen</f:facet>
+                        <h:outputText value="#{dish.averagePrice}">
+                            <f:convertNumber type="currency" currencySymbol="€" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Revenu total</f:facet>
+                        <strong>
+                            <h:outputText value="#{dish.totalRevenue}" style="color: #DC2626;">
+                                <f:convertNumber type="currency" currencySymbol="€" />
+                            </h:outputText>
+                        </strong>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty reportBean.topDishes}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucune donnée disponible pour le moment.
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="card" style="background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); color: white;">
+                <h2 style="color: white; margin-bottom: 1rem;">💡 Insights</h2>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.5rem 0;">✅ Les plats les plus rentables génèrent le plus de revenus</li>
+                    <li style="padding: 0.5rem 0;">📊 Utilisez ces données pour optimiser votre menu</li>
+                    <li style="padding: 0.5rem 0;">🎯 Concentrez-vous sur les articles à forte demande</li>
+                </ul>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

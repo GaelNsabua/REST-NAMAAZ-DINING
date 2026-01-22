@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Tableau de bord - Namaaz Dining Menu</ui:define>
+    
+    <ui:define name="content">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">📊 Tableau de bord</h1>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalCategories}</div>
+                    <div class="stat-label">Catégories</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalMenuItems}</div>
+                    <div class="stat-label">Plats au menu</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.availableItems}</div>
+                    <div class="stat-label">Plats disponibles</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.unavailableItems}</div>
+                    <div class="stat-label">Plats indisponibles</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Accès rapide</h2>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <h:link outcome="/categories" styleClass="btn btn-primary">
+                    Gérer les catégories
+                </h:link>
+                <h:link outcome="/items" styleClass="btn btn-secondary">
+                    Gérer les plats
+                </h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

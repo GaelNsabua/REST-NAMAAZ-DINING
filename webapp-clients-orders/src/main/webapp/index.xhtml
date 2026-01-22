@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Tableau de bord - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">📊 Tableau de bord</h1>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalClients}</div>
+                    <div class="stat-label">Clients enregistrés</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalOrders}</div>
+                    <div class="stat-label">Commandes totales</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.completedOrders}</div>
+                    <div class="stat-label">Commandes terminées</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <h:outputText value="#{dashboardBean.totalRevenue}">
+                            <f:convertNumber type="currency" currencySymbol="€" />
+                        </h:outputText>
+                    </div>
+                    <div class="stat-label">Chiffre d'affaires</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Accès rapide</h2>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                <h:link outcome="/clients" styleClass="btn btn-primary">
+                    Gérer les clients
+                </h:link>
+                <h:link outcome="/orders" styleClass="btn btn-secondary">
+                    Gérer les commandes
+                </h:link>
+                <h:link outcome="/payments" styleClass="btn btn-success">
+                    Gérer les paiements
+                </h:link>
+                <h:link outcome="/reports" styleClass="btn btn-danger">
+                    Voir les rapports
+                </h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

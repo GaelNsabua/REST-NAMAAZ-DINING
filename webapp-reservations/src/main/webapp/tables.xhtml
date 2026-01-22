@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Tables - Namaaz Dining Réservations</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="tablesForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">🪑 Gestion des tables</h1>
+                    <h:commandButton value="+ Nouvelle table" 
+                                     action="#{tableBean.prepareNewTable()}"
+                                     styleClass="btn btn-primary"
+                                     update="tablesForm" />
+                </div>
+
+                <!-- Filter -->
+                <div style="background: #F9FAFB; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <h:outputLabel for="filterStatus" value="Statut" styleClass="form-label" />
+                            <h:selectOneMenu id="filterStatus" 
+                                             value="#{tableBean.filterStatus}"
+                                             styleClass="form-control">
+                                <f:selectItems value="#{tableBean.statusFilterItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <h:commandButton value="Filtrer" 
+                                         action="#{tableBean.applyFilter()}"
+                                         styleClass="btn btn-primary"
+                                         update="tablesForm" />
+
+                        <h:commandButton value="Réinitialiser" 
+                                         action="#{tableBean.clearFilter()}"
+                                         styleClass="btn btn-secondary"
+                                         update="tablesForm" />
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Tables Table -->
+                <h:dataTable value="#{tableBean.tables}" 
+                             var="table"
+                             styleClass="table"
+                             rendered="#{not empty tableBean.tables}">
+                    <h:column>
+                        <f:facet name="header">N° Table</f:facet>
+                        #{table.tableNumber}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Capacité</f:facet>
+                        #{table.capacity} personnes
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{tableBean.getStatusBadgeClass(table.status)}">
+                            #{tableBean.getStatusLabel(table.status)}
+                        </span>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <h:commandButton value="✏️" 
+                                             title="Modifier"
+                                             action="#{tableBean.prepareEditTable(table)}"
+                                             styleClass="btn btn-secondary"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             update="tablesForm">
+                                <f:ajax execute="@this" render="tablesForm" />
+                            </h:commandButton>
+                            
+                            <h:panelGroup rendered="#{table.status != 'FREE'}">
+                                <h:commandButton value="✅" 
+                                                 title="Marquer libre"
+                                                 action="#{tableBean.updateStatus(table.id, 'FREE')}"
+                                                 styleClass="btn btn-success"
+                                                 style="padding: 0.5rem 0.75rem;"
+                                                 update="tablesForm">
+                                    <f:ajax execute="@this" render="tablesForm" />
+                                </h:commandButton>
+                            </h:panelGroup>
+                            
+                            <h:commandButton value="🗑️" 
+                                             title="Supprimer"
+                                             action="#{tableBean.deleteTable(table.id)}"
+                                             styleClass="btn btn-danger"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer cette table ?');">
+                                <f:ajax execute="@this" render="tablesForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty tableBean.tables}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucune table trouvée. Créez-en une nouvelle !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create/Edit -->
+            <h:panelGroup rendered="#{tableBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                    <div class="card" style="width: 500px; max-width: 90%; margin: 0;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                #{empty tableBean.newTable.id ? 'Nouvelle table' : 'Modifier la table'}
+                            </h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="tableNumber" value="Numéro de table" styleClass="form-label" />
+                            <h:inputText id="tableNumber" 
+                                         value="#{tableBean.newTable.tableNumber}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le numéro est obligatoire" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="capacity" value="Capacité (personnes)" styleClass="form-label" />
+                            <h:inputText id="capacity" 
+                                         value="#{tableBean.newTable.capacity}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="La capacité est obligatoire">
+                                <f:convertNumber type="number" integerOnly="true" />
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="status" value="Statut" styleClass="form-label" />
+                            <h:selectOneMenu id="status" 
+                                             value="#{tableBean.newTable.status}" 
+                                             styleClass="form-control"
+                                             required="true">
+                                <f:selectItems value="#{tableBean.statusSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{tableBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="tablesForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{tableBean.saveTable()}"
+                                             styleClass="btn btn-primary"
+                                             update="tablesForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

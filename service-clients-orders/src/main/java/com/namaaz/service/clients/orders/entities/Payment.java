@@ -18,12 +18,11 @@ public class Payment implements Serializable {
     
     @Id
     @GeneratedValue
-    @Column(length = 36)
-    private String id;
+    private UUID id;
     
     @NotNull(message = "Order ID is required")
-    @Column(name = "order_id", nullable = false, length = 36)
-    private String orderId;
+    @Column(name = "order_id", nullable = false)
+    private UUID orderId;
     
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
@@ -51,14 +50,14 @@ public class Payment implements Serializable {
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = UUID.randomUUID();
         }
     }
     
     // Constructors
     public Payment() {}
     
-    public Payment(String orderId, BigDecimal amount, PaymentMethod method) {
+    public Payment(UUID orderId, BigDecimal amount, PaymentMethod method) {
         this.orderId = orderId;
         this.amount = amount;
         this.method = method;
@@ -66,19 +65,19 @@ public class Payment implements Serializable {
     }
     
     // Getters and Setters
-    public String getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     
-    public String getOrderId() {
+    public UUID getOrderId() {
         return orderId;
     }
     
-    public void setOrderId(String orderId) {
+    public void setOrderId(UUID orderId) {
         this.orderId = orderId;
     }
     

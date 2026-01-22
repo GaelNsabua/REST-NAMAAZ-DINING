@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Tableau de bord - Namaaz Dining Réservations</ui:define>
+    
+    <ui:define name="content">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">📊 Tableau de bord</h1>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalTables}</div>
+                    <div class="stat-label">Tables totales</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.freeTables}</div>
+                    <div class="stat-label">Tables libres</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.totalReservations}</div>
+                    <div class="stat-label">Réservations totales</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">#{dashboardBean.pendingReservations}</div>
+                    <div class="stat-label">Réservations en attente</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Accès rapide</h2>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <h:link outcome="/tables" styleClass="btn btn-primary">
+                    Gérer les tables
+                </h:link>
+                <h:link outcome="/reservations" styleClass="btn btn-secondary">
+                    Gérer les réservations
+                </h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

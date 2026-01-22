@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Catégories - Namaaz Dining Menu</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="categoriesForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">🗂️ Gestion des catégories</h1>
+                    <h:commandButton value="+ Nouvelle catégorie" 
+                                     action="#{categoryBean.prepareNewCategory()}"
+                                     styleClass="btn btn-primary"
+                                     update="categoriesForm" />
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Categories Table -->
+                <h:dataTable value="#{categoryBean.categories}" 
+                             var="category"
+                             styleClass="table"
+                             rendered="#{not empty categoryBean.categories}">
+                    <h:column>
+                        <f:facet name="header">Nom</f:facet>
+                        #{category.name}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Description</f:facet>
+                        #{category.description}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <h:panelGroup rendered="#{category.active}">
+                            <span class="badge badge-success">Active</span>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not category.active}">
+                            <span class="badge badge-danger">Inactive</span>
+                        </h:panelGroup>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <h:commandButton value="✏️ Modifier" 
+                                         action="#{categoryBean.prepareEditCategory(category)}"
+                                         styleClass="btn btn-secondary"
+                                         style="margin-right: 0.5rem;"
+                                         update="categoriesForm">
+                            <f:ajax execute="@this" render="categoriesForm" />
+                        </h:commandButton>
+                        <h:commandButton value="🗑️ Supprimer" 
+                                         action="#{categoryBean.deleteCategory(category.id)}"
+                                         styleClass="btn btn-danger"
+                                         onclick="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
+                            <f:ajax execute="@this" render="categoriesForm" />
+                        </h:commandButton>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty categoryBean.categories}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucune catégorie trouvée. Créez-en une nouvelle !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create/Edit -->
+            <h:panelGroup rendered="#{categoryBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                    <div class="card" style="width: 500px; max-width: 90%; margin: 0;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                #{empty categoryBean.newCategory.id ? 'Nouvelle catégorie' : 'Modifier la catégorie'}
+                            </h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="name" value="Nom" styleClass="form-label" />
+                            <h:inputText id="name" 
+                                         value="#{categoryBean.newCategory.name}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le nom est obligatoire" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="description" value="Description" styleClass="form-label" />
+                            <h:inputTextarea id="description" 
+                                             value="#{categoryBean.newCategory.description}" 
+                                             styleClass="form-control"
+                                             rows="3" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:selectBooleanCheckbox id="active" 
+                                                     value="#{categoryBean.newCategory.active}" />
+                            <h:outputLabel for="active" value=" Active" style="margin-left: 0.5rem;" />
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{categoryBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="categoriesForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{categoryBean.saveCategory()}"
+                                             styleClass="btn btn-primary"
+                                             update="categoriesForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

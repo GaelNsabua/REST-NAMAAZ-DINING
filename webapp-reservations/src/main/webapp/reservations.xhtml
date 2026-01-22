@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Réservations - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="reservationsForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">📅 Gestion des réservations</h1>
+                    <h:commandButton value="+ Nouvelle réservation" 
+                                     action="#{reservationBean.prepareNewReservation()}"
+                                     styleClass="btn btn-primary"
+                                     update="reservationsForm" />
+                </div>
+
+                <!-- Filter -->
+                <div style="background: #F9FAFB; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <h:outputLabel for="filterStatus" value="Statut" styleClass="form-label" />
+                            <h:selectOneMenu id="filterStatus" 
+                                             value="#{reservationBean.filterStatus}"
+                                             styleClass="form-control">
+                                <f:selectItems value="#{reservationBean.statusFilterItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <h:commandButton value="Filtrer" 
+                                         action="#{reservationBean.applyFilter()}"
+                                         styleClass="btn btn-primary"
+                                         update="reservationsForm" />
+
+                        <h:commandButton value="Réinitialiser" 
+                                         action="#{reservationBean.clearFilter()}"
+                                         styleClass="btn btn-secondary"
+                                         update="reservationsForm" />
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Reservations Table -->
+                <h:dataTable value="#{reservationBean.reservations}" 
+                             var="res"
+                             styleClass="table"
+                             rendered="#{not empty reservationBean.reservations}">
+                    <h:column>
+                        <f:facet name="header">Client</f:facet>
+                        <div>
+                            <strong>#{res.clientName}</strong><br/>
+                            <small style="color: #6B7280;">#{res.clientPhone}</small>
+                        </div>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Date et heure</f:facet>
+                        <h:outputText value="#{res.reservationDateTime}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Nb. personnes</f:facet>
+                        #{res.numberOfGuests}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{reservationBean.getStatusBadgeClass(res.status)}">
+                            #{reservationBean.getStatusLabel(res.status)}
+                        </span>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <h:panelGroup rendered="#{res.status == 'PENDING'}">
+                                <h:commandButton value="✅" 
+                                                 title="Confirmer"
+                                                 action="#{reservationBean.confirmReservation(res.id)}"
+                                                 styleClass="btn btn-success"
+                                                 style="padding: 0.5rem 0.75rem;"
+                                                 update="reservationsForm">
+                                    <f:ajax execute="@this" render="reservationsForm" />
+                                </h:commandButton>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{res.status != 'CANCELLED'}">
+                                <h:commandButton value="❌" 
+                                                 title="Annuler"
+                                                 action="#{reservationBean.cancelReservation(res.id)}"
+                                                 styleClass="btn btn-danger"
+                                                 style="padding: 0.5rem 0.75rem;"
+                                                 onclick="return confirm('Voulez-vous vraiment annuler cette réservation ?');"
+                                                 update="reservationsForm">
+                                    <f:ajax execute="@this" render="reservationsForm" />
+                                </h:commandButton>
+                            </h:panelGroup>
+                            
+                            <h:commandButton value="🗑️" 
+                                             title="Supprimer"
+                                             action="#{reservationBean.deleteReservation(res.id)}"
+                                             styleClass="btn btn-danger"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer cette réservation ?');">
+                                <f:ajax execute="@this" render="reservationsForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty reservationBean.reservations}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucune réservation trouvée. Créez-en une nouvelle !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create/Edit -->
+            <h:panelGroup rendered="#{reservationBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; overflow-y: auto;">
+                    <div class="card" style="width: 600px; max-width: 90%; margin: 2rem auto;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                #{empty reservationBean.newReservation.id ? 'Nouvelle réservation' : 'Modifier la réservation'}
+                            </h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="client" value="Client" styleClass="form-label" />
+                            <h:selectOneMenu id="client" 
+                                             value="#{reservationBean.newReservation.clientId}" 
+                                             styleClass="form-control"
+                                             required="true"
+                                             requiredMessage="Le client est obligatoire">
+                                <f:selectItems value="#{reservationBean.clientSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="resDateTime" value="Date et heure" styleClass="form-label" />
+                            <h:inputText id="resDateTime" 
+                                         value="#{reservationBean.newReservation.reservationDateTime}" 
+                                         styleClass="form-control"
+                                         type="datetime-local"
+                                         required="true"
+                                         requiredMessage="La date est obligatoire">
+                                <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" />
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="guests" value="Nombre de personnes" styleClass="form-label" />
+                            <h:inputText id="guests" 
+                                         value="#{reservationBean.newReservation.numberOfGuests}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le nombre de personnes est obligatoire">
+                                <f:convertNumber type="number" integerOnly="true" />
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="tables" value="Tables" styleClass="form-label" />
+                            <h:selectManyCheckbox id="tables" 
+                                                  value="#{reservationBean.newReservation.tableIds}" 
+                                                  styleClass="form-control">
+                                <f:selectItems value="#{reservationBean.tableSelectItems}" />
+                            </h:selectManyCheckbox>
+                            <small style="color: #6B7280;">Sélectionnez une ou plusieurs tables</small>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="requests" value="Demandes spéciales" styleClass="form-label" />
+                            <h:inputTextarea id="requests" 
+                                             value="#{reservationBean.newReservation.specialRequests}" 
+                                             styleClass="form-control"
+                                             rows="3" />
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{reservationBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="reservationsForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{reservationBean.saveReservation()}"
+                                             styleClass="btn btn-primary"
+                                             update="reservationsForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

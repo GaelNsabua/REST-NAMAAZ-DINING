@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Plats - Namaaz Dining Menu</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="itemsForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">🍽️ Gestion des plats</h1>
+                    <h:commandButton value="+ Nouveau plat" 
+                                     action="#{menuItemBean.prepareNewMenuItem()}"
+                                     styleClass="btn btn-primary"
+                                     update="itemsForm" />
+                </div>
+
+                <!-- Filters -->
+                <div style="background: #F9FAFB; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 1rem; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <h:outputLabel for="filterCategory" value="Catégorie" styleClass="form-label" />
+                            <h:selectOneMenu id="filterCategory" 
+                                             value="#{menuItemBean.filterCategoryId}"
+                                             styleClass="form-control">
+                                <f:selectItems value="#{menuItemBean.categoryFilterItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <h:outputLabel for="filterAvailable" value="Disponibilité" styleClass="form-label" />
+                            <h:selectOneMenu id="filterAvailable" 
+                                             value="#{menuItemBean.filterAvailable}"
+                                             styleClass="form-control">
+                                <f:selectItem itemValue="#{null}" itemLabel="Tous" />
+                                <f:selectItem itemValue="#{true}" itemLabel="Disponibles uniquement" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <h:commandButton value="Filtrer" 
+                                         action="#{menuItemBean.applyFilters()}"
+                                         styleClass="btn btn-primary"
+                                         update="itemsForm" />
+
+                        <h:commandButton value="Réinitialiser" 
+                                         action="#{menuItemBean.clearFilters()}"
+                                         styleClass="btn btn-secondary"
+                                         update="itemsForm" />
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Menu Items Table -->
+                <h:dataTable value="#{menuItemBean.menuItems}" 
+                             var="item"
+                             styleClass="table"
+                             rendered="#{not empty menuItemBean.menuItems}">
+                    <h:column>
+                        <f:facet name="header">Nom</f:facet>
+                        #{item.name}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Catégorie</f:facet>
+                        #{item.categoryName}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Description</f:facet>
+                        <span style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            #{item.description}
+                        </span>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Prix</f:facet>
+                        <h:outputText value="#{item.price}">
+                            <f:convertNumber type="currency" currencySymbol="€" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Disponibilité</f:facet>
+                        <h:panelGroup rendered="#{item.available}">
+                            <span class="badge badge-success">Disponible</span>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not item.available}">
+                            <span class="badge badge-danger">Indisponible</span>
+                        </h:panelGroup>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <h:commandButton value="✏️" 
+                                             title="Modifier"
+                                             action="#{menuItemBean.prepareEditMenuItem(item)}"
+                                             styleClass="btn btn-secondary"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             update="itemsForm">
+                                <f:ajax execute="@this" render="itemsForm" />
+                            </h:commandButton>
+                            
+                            <h:commandButton value="#{item.available ? '❌' : '✅'}" 
+                                             title="#{item.available ? 'Marquer indisponible' : 'Marquer disponible'}"
+                                             action="#{menuItemBean.toggleAvailability(item.id, item.available)}"
+                                             styleClass="btn btn-secondary"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             update="itemsForm">
+                                <f:ajax execute="@this" render="itemsForm" />
+                            </h:commandButton>
+                            
+                            <h:commandButton value="🗑️" 
+                                             title="Supprimer"
+                                             action="#{menuItemBean.deleteMenuItem(item.id)}"
+                                             styleClass="btn btn-danger"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer ce plat ?');">
+                                <f:ajax execute="@this" render="itemsForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty menuItemBean.menuItems}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucun plat trouvé. Créez-en un nouveau !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create/Edit -->
+            <h:panelGroup rendered="#{menuItemBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                    <div class="card" style="width: 600px; max-width: 90%; margin: 0;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                #{empty menuItemBean.newMenuItem.id ? 'Nouveau plat' : 'Modifier le plat'}
+                            </h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="itemName" value="Nom" styleClass="form-label" />
+                            <h:inputText id="itemName" 
+                                         value="#{menuItemBean.newMenuItem.name}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le nom est obligatoire" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="category" value="Catégorie" styleClass="form-label" />
+                            <h:selectOneMenu id="category" 
+                                             value="#{menuItemBean.newMenuItem.categoryId}" 
+                                             styleClass="form-control"
+                                             required="true"
+                                             requiredMessage="La catégorie est obligatoire">
+                                <f:selectItems value="#{menuItemBean.categorySelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="itemDescription" value="Description" styleClass="form-label" />
+                            <h:inputTextarea id="itemDescription" 
+                                             value="#{menuItemBean.newMenuItem.description}" 
+                                             styleClass="form-control"
+                                             rows="3" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="price" value="Prix (€)" styleClass="form-label" />
+                            <h:inputText id="price" 
+                                         value="#{menuItemBean.newMenuItem.price}" 
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Le prix est obligatoire">
+                                <f:convertNumber type="number" minFractionDigits="2" maxFractionDigits="2" />
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:selectBooleanCheckbox id="itemAvailable" 
+                                                     value="#{menuItemBean.newMenuItem.available}" />
+                            <h:outputLabel for="itemAvailable" value=" Disponible" style="margin-left: 0.5rem;" />
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{menuItemBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="itemsForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{menuItemBean.saveMenuItem()}"
+                                             styleClass="btn btn-primary"
+                                             update="itemsForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Paiements - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="paymentsForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">💳 Gestion des paiements</h1>
+                    <h:commandButton value="+ Nouveau paiement" 
+                                     action="#{paymentBean.prepareNewPayment()}"
+                                     styleClass="btn btn-primary"
+                                     update="paymentsForm" />
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Payments Table -->
+                <h:dataTable value="#{paymentBean.payments}" 
+                             var="payment"
+                             styleClass="table"
+                             rendered="#{not empty paymentBean.payments}">
+                    <h:column>
+                        <f:facet name="header">Commande</f:facet>
+                        ##{payment.orderId != null ? payment.orderId.substring(0, 8) : 'N/A'}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Montant</f:facet>
+                        <h:outputText value="#{payment.amount}">
+                            <f:convertNumber type="currency" currencySymbol="€" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Méthode</f:facet>
+                        #{paymentBean.getPaymentMethodLabel(payment.paymentMethod)}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{paymentBean.getPaymentStatusBadgeClass(payment.status)}">
+                            #{paymentBean.getPaymentStatusLabel(payment.status)}
+                        </span>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Date</f:facet>
+                        <h:outputText value="#{payment.paymentDateTime}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Transaction</f:facet>
+                        <small style="color: #6B7280;">#{payment.transactionId}</small>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty paymentBean.payments}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucun paiement enregistré.
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create -->
+            <h:panelGroup rendered="#{paymentBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                    <div class="card" style="width: 600px; max-width: 90%; margin: 0;">
+                        <div class="card-header">
+                            <h2 class="card-title">Nouveau paiement</h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="order" value="Commande" styleClass="form-label" />
+                            <h:selectOneMenu id="order" 
+                                             value="#{paymentBean.newPayment.orderId}" 
+                                             styleClass="form-control"
+                                             required="true">
+                                <f:selectItems value="#{paymentBean.orderSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="amount" value="Montant (€)" styleClass="form-label" />
+                            <h:inputText id="amount" 
+                                         value="#{paymentBean.newPayment.amount}" 
+                                         styleClass="form-control"
+                                         required="true">
+                                <f:convertNumber type="number" minFractionDigits="2" maxFractionDigits="2" />
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="method" value="Méthode de paiement" styleClass="form-label" />
+                            <h:selectOneMenu id="method" 
+                                             value="#{paymentBean.newPayment.paymentMethod}" 
+                                             styleClass="form-control"
+                                             required="true">
+                                <f:selectItems value="#{paymentBean.paymentMethodSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="status" value="Statut" styleClass="form-label" />
+                            <h:selectOneMenu id="status" 
+                                             value="#{paymentBean.newPayment.status}" 
+                                             styleClass="form-control"
+                                             required="true">
+                                <f:selectItems value="#{paymentBean.paymentStatusSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="transactionId" value="ID Transaction" styleClass="form-label" />
+                            <h:inputText id="transactionId" 
+                                         value="#{paymentBean.newPayment.transactionId}" 
+                                         styleClass="form-control" />
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{paymentBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="paymentsForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{paymentBean.savePayment()}"
+                                             styleClass="btn btn-primary"
+                                             update="paymentsForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

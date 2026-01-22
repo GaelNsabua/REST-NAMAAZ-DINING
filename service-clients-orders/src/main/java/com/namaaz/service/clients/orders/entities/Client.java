@@ -17,8 +17,7 @@ public class Client implements Serializable {
     
     @Id
     @GeneratedValue
-    @Column(length = 36)
-    private String id;
+    private UUID id;
     
     @NotBlank(message = "First name is required")
     @Size(max = 100)
@@ -54,7 +53,7 @@ public class Client implements Serializable {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = UUID.randomUUID();
         }
     }
     
@@ -73,11 +72,11 @@ public class Client implements Serializable {
     }
     
     // Getters and Setters
-    public String getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Commandes - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="ordersForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">🛒 Gestion des commandes</h1>
+                    <h:commandButton value="+ Nouvelle commande" 
+                                     action="#{orderBean.prepareNewOrder()}"
+                                     styleClass="btn btn-primary"
+                                     update="ordersForm" />
+                </div>
+
+                <!-- Filter -->
+                <div style="background: #F9FAFB; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <h:outputLabel for="filterStatus" value="Statut" styleClass="form-label" />
+                            <h:selectOneMenu id="filterStatus" 
+                                             value="#{orderBean.filterStatus}"
+                                             styleClass="form-control">
+                                <f:selectItems value="#{orderBean.statusFilterItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <h:commandButton value="Filtrer" 
+                                         action="#{orderBean.applyFilter()}"
+                                         styleClass="btn btn-primary"
+                                         update="ordersForm" />
+
+                        <h:commandButton value="Réinitialiser" 
+                                         action="#{orderBean.clearFilter()}"
+                                         styleClass="btn btn-secondary"
+                                         update="ordersForm" />
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Orders Table -->
+                <h:dataTable value="#{orderBean.orders}" 
+                             var="order"
+                             styleClass="table"
+                             rendered="#{not empty orderBean.orders}">
+                    <h:column>
+                        <f:facet name="header">Client</f:facet>
+                        #{order.clientName}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Date</f:facet>
+                        <h:outputText value="#{order.orderDateTime}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Montant</f:facet>
+                        <h:outputText value="#{order.totalAmount}">
+                            <f:convertNumber type="currency" currencySymbol="€" />
+                        </h:outputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Statut</f:facet>
+                        <span class="badge #{orderBean.getStatusBadgeClass(order.status)}">
+                            #{orderBean.getStatusLabel(order.status)}
+                        </span>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <h:panelGroup rendered="#{order.status != 'COMPLETED'}">
+                                <h:commandButton value="✅" 
+                                                 title="Terminer"
+                                                 action="#{orderBean.completeOrder(order.id)}"
+                                                 styleClass="btn btn-success"
+                                                 style="padding: 0.5rem 0.75rem;"
+                                                 update="ordersForm">
+                                    <f:ajax execute="@this" render="ordersForm" />
+                                </h:commandButton>
+                            </h:panelGroup>
+                            
+                            <h:commandButton value="🗑️" 
+                                             title="Supprimer"
+                                             action="#{orderBean.deleteOrder(order.id)}"
+                                             styleClass="btn btn-danger"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer cette commande ?');">
+                                <f:ajax execute="@this" render="ordersForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty orderBean.orders}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucune commande trouvée. Créez-en une nouvelle !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create -->
+            <h:panelGroup rendered="#{orderBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; overflow-y: auto;">
+                    <div class="card" style="width: 800px; max-width: 95%; margin: 2rem auto;">
+                        <div class="card-header">
+                            <h2 class="card-title">Nouvelle commande</h2>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="client" value="Client" styleClass="form-label" />
+                            <h:selectOneMenu id="client" 
+                                             value="#{orderBean.newOrder.clientId}" 
+                                             styleClass="form-control"
+                                             required="true">
+                                <f:selectItems value="#{orderBean.clientSelectItems}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div style="background: #F9FAFB; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
+                            <h3 style="margin-bottom: 1rem;">Ajouter des articles</h3>
+                            
+                            <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 1rem; align-items: end;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <h:outputLabel for="menuItem" value="Plat" styleClass="form-label" />
+                                    <h:selectOneMenu id="menuItem" 
+                                                     value="#{orderBean.selectedMenuItemId}" 
+                                                     styleClass="form-control">
+                                        <f:selectItems value="#{orderBean.menuItemSelectItems}" />
+                                    </h:selectOneMenu>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <h:outputLabel for="quantity" value="Quantité" styleClass="form-label" />
+                                    <h:inputText id="quantity" 
+                                                 value="#{orderBean.itemQuantity}" 
+                                                 styleClass="form-control">
+                                        <f:convertNumber type="number" integerOnly="true" />
+                                    </h:inputText>
+                                </div>
+
+                                <h:commandButton value="+ Ajouter" 
+                                                 action="#{orderBean.addItemToOrder()}"
+                                                 styleClass="btn btn-primary"
+                                                 update="ordersForm">
+                                    <f:ajax execute="@form" render="ordersForm" />
+                                </h:commandButton>
+                            </div>
+
+                            <!-- Items List -->
+                            <h:dataTable value="#{orderBean.newOrder.items}" 
+                                         var="item"
+                                         styleClass="table"
+                                         style="margin-top: 1rem;"
+                                         rendered="#{not empty orderBean.newOrder.items}">
+                                <h:column>
+                                    <f:facet name="header">Plat</f:facet>
+                                    #{item.menuItemName}
+                                </h:column>
+                                
+                                <h:column>
+                                    <f:facet name="header">Quantité</f:facet>
+                                    #{item.quantity}
+                                </h:column>
+                                
+                                <h:column>
+                                    <f:facet name="header">Prix unitaire</f:facet>
+                                    <h:outputText value="#{item.unitPrice}">
+                                        <f:convertNumber type="currency" currencySymbol="€" />
+                                    </h:outputText>
+                                </h:column>
+                                
+                                <h:column>
+                                    <f:facet name="header">Sous-total</f:facet>
+                                    <h:outputText value="#{item.subtotal}">
+                                        <f:convertNumber type="currency" currencySymbol="€" />
+                                    </h:outputText>
+                                </h:column>
+                                
+                                <h:column>
+                                    <f:facet name="header">Action</f:facet>
+                                    <h:commandButton value="🗑️" 
+                                                     action="#{orderBean.removeItemFromOrder(item)}"
+                                                     styleClass="btn btn-danger"
+                                                     style="padding: 0.25rem 0.5rem;"
+                                                     update="ordersForm">
+                                        <f:ajax execute="@this" render="ordersForm" />
+                                    </h:commandButton>
+                                </h:column>
+                            </h:dataTable>
+
+                            <div style="text-align: right; margin-top: 1rem; font-size: 1.25rem; font-weight: bold;">
+                                Total: <h:outputText value="#{orderBean.newOrder.totalAmount}">
+                                    <f:convertNumber type="currency" currencySymbol="€" />
+                                </h:outputText>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{orderBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="ordersForm" />
+                            <h:commandButton value="Créer la commande" 
+                                             action="#{orderBean.saveOrder()}"
+                                             styleClass="btn btn-primary"
+                                             update="ordersForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

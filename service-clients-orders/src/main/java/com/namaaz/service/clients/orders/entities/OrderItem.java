@@ -18,16 +18,15 @@ public class OrderItem implements Serializable {
     
     @Id
     @GeneratedValue
-    @Column(length = 36)
-    private String id;
+    private UUID id;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
     
     @NotNull(message = "Menu item ID is required")
-    @Column(name = "menu_item_id", nullable = false, length = 36)
-    private String menuItemId;
+    @Column(name = "menu_item_id", nullable = false)
+    private UUID menuItemId;
     
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
@@ -52,7 +51,7 @@ public class OrderItem implements Serializable {
         createdAt = OffsetDateTime.now();
         calculateTotalPrice();
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = UUID.randomUUID();
         }
     }
     
@@ -70,7 +69,7 @@ public class OrderItem implements Serializable {
     // Constructors
     public OrderItem() {}
     
-    public OrderItem(String menuItemId, Integer quantity, BigDecimal unitPrice) {
+    public OrderItem(UUID menuItemId, Integer quantity, BigDecimal unitPrice) {
         this.menuItemId = menuItemId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
@@ -78,11 +77,11 @@ public class OrderItem implements Serializable {
     }
     
     // Getters and Setters
-    public String getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     
@@ -94,11 +93,11 @@ public class OrderItem implements Serializable {
         this.order = order;
     }
     
-    public String getMenuItemId() {
+    public UUID getMenuItemId() {
         return menuItemId;
     }
     
-    public void setMenuItemId(String menuItemId) {
+    public void setMenuItemId(UUID menuItemId) {
         this.menuItemId = menuItemId;
     }
     

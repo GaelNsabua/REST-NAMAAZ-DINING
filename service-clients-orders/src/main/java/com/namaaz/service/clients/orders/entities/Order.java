@@ -20,18 +20,17 @@ public class Order implements Serializable {
     
     @Id
     @GeneratedValue
-    @Column(length = 36)
-    private String id;
+    private UUID id;
     
     @NotNull(message = "Client ID is required")
-    @Column(name = "client_id", nullable = false, length = 36)
-    private String clientId;
+    @Column(name = "client_id", nullable = false)
+    private UUID clientId;
     
-    @Column(name = "reservation_id", length = 36)
-    private String reservationId;
+    @Column(name = "reservation_id")
+    private UUID reservationId;
     
-    @Column(name = "table_id", length = 36)
-    private String tableId;
+    @Column(name = "table_id")
+    private UUID tableId;
     
     @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
@@ -57,7 +56,7 @@ public class Order implements Serializable {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            id = UUID.randomUUID();
         }
     }
     
@@ -86,41 +85,41 @@ public class Order implements Serializable {
     // Constructors
     public Order() {}
     
-    public Order(String clientId) {
+    public Order(UUID clientId) {
         this.clientId = clientId;
         this.status = OrderStatus.NEW;
     }
     
     // Getters and Setters
-    public String getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     
-    public String getClientId() {
+    public UUID getClientId() {
         return clientId;
     }
     
-    public void setClientId(String clientId) {
+    public void setClientId(UUID clientId) {
         this.clientId = clientId;
     }
     
-    public String getReservationId() {
+    public UUID getReservationId() {
         return reservationId;
     }
     
-    public void setReservationId(String reservationId) {
+    public void setReservationId(UUID reservationId) {
         this.reservationId = reservationId;
     }
     
-    public String getTableId() {
+    public UUID getTableId() {
         return tableId;
     }
     
-    public void setTableId(String tableId) {
+    public void setTableId(UUID tableId) {
         this.tableId = tableId;
     }
     
