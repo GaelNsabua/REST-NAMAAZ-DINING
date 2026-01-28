@@ -206,7 +206,7 @@ public class OrderBean implements Serializable {
         List<SelectItem> items = new ArrayList<>();
         items.add(new SelectItem("", "-- Sélectionner un plat --"));
         for (MenuItemDTO item : menuItems) {
-            items.add(new SelectItem(item.getId(), item.getName() + " - " + item.getPrice() + "€"));
+            items.add(new SelectItem(item.getId(), item.getName() + " - " + item.getPrice() + "$"));
         }
         return items;
     }

@@ -14,7 +14,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,8 @@ public class ReservationBean implements Serializable {
     private ReservationDTO newReservation;
     private boolean showDialog;
     private String filterStatus;
+    private String dateTimeInput;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     @PostConstruct
     public void init() {
@@ -91,6 +96,7 @@ public class ReservationBean implements Serializable {
         newReservation.setStatus("PENDING");
         newReservation.setReservationDateTime(OffsetDateTime.now().plusDays(1));
         newReservation.setTableIds(new ArrayList<>());
+        dateTimeInput = LocalDateTime.now().plusDays(1).format(FORMATTER);
         loadFreeTables();
         showDialog = true;
     }
@@ -106,12 +112,21 @@ public class ReservationBean implements Serializable {
         newReservation.setSpecialRequests(reservation.getSpecialRequests());
         newReservation.setTableIds(reservation.getTableIds() != null ? 
             new ArrayList<>(reservation.getTableIds()) : new ArrayList<>());
+        if (reservation.getReservationDateTime() != null) {
+            dateTimeInput = reservation.getReservationDateTime().toLocalDateTime().format(FORMATTER);
+        }
         loadFreeTables();
         showDialog = true;
     }
 
     public void saveReservation() {
         try {
+            // Convertir dateTimeInput en OffsetDateTime
+            if (dateTimeInput != null && !dateTimeInput.isEmpty()) {
+                LocalDateTime localDateTime = LocalDateTime.parse(dateTimeInput, FORMATTER);
+                newReservation.setReservationDateTime(localDateTime.atZone(ZoneId.systemDefault()).toOffsetDateTime());
+            }
+            
             if (newReservation.getId() == null || newReservation.getId().isEmpty()) {
                 ReservationDTO created = reservationServiceClient.createReservation(newReservation);
                 if (created != null) {
@@ -187,6 +202,7 @@ public class ReservationBean implements Serializable {
         newReservation.setStatus("PENDING");
         newReservation.setReservationDateTime(OffsetDateTime.now().plusDays(1));
         newReservation.setTableIds(new ArrayList<>());
+        dateTimeInput = null;
     }
 
     public List<SelectItem> getClientSelectItems() {
@@ -294,5 +310,13 @@ public class ReservationBean implements Serializable {
 
     public void setFilterStatus(String filterStatus) {
         this.filterStatus = filterStatus;
+    }
+
+    public String getDateTimeInput() {
+        return dateTimeInput;
+    }
+
+    public void setDateTimeInput(String dateTimeInput) {
+        this.dateTimeInput = dateTimeInput;
     }
 }

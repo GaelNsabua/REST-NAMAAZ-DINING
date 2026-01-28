@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition template="/templates/layout.xhtml">
+    <ui:define name="title">Clients - Namaaz Dining</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="clientsForm">
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h1 class="card-title">👥 Gestion des clients</h1>
+                    <h:commandButton value="+ Nouveau client" 
+                                     action="#{clientBean.prepareNewClient()}"
+                                     styleClass="btn btn-primary"
+                                     update="clientsForm" />
+                </div>
+
+                <!-- Messages -->
+                <h:messages styleClass="alert alert-error" />
+
+                <!-- Clients Table -->
+                <h:dataTable value="#{clientBean.clients}" 
+                             var="client"
+                             styleClass="table"
+                             rendered="#{not empty clientBean.clients}">
+                    <h:column>
+                        <f:facet name="header">Nom complet</f:facet>
+                        #{client.fullName}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Email</f:facet>
+                        #{client.email}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Téléphone</f:facet>
+                        #{client.phone}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Adresse</f:facet>
+                        #{client.address}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <h:commandButton value="✏️" 
+                                             title="Modifier"
+                                             action="#{clientBean.prepareEditClient(client)}"
+                                             styleClass="btn btn-secondary"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             update="clientsForm">
+                                <f:ajax execute="@this" render="clientsForm" />
+                            </h:commandButton>
+                            
+                            <h:commandButton value="🗑️" 
+                                             title="Supprimer"
+                                             action="#{clientBean.deleteClient(client.id)}"
+                                             styleClass="btn btn-danger"
+                                             style="padding: 0.5rem 0.75rem;"
+                                             onclick="return confirm('Voulez-vous vraiment supprimer ce client ?');">
+                                <f:ajax execute="@this" render="clientsForm" />
+                            </h:commandButton>
+                        </div>
+                    </h:column>
+                </h:dataTable>
+
+                <h:panelGroup rendered="#{empty clientBean.clients}">
+                    <p style="text-align: center; padding: 2rem; color: #6B7280;">
+                        Aucun client trouvé. Créez-en un nouveau !
+                    </p>
+                </h:panelGroup>
+            </div>
+
+            <!-- Dialog for Create/Edit -->
+            <h:panelGroup rendered="#{clientBean.showDialog}">
+                <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                    <div class="card" style="width: 600px; max-width: 90%; margin: 0;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                #{empty clientBean.newClient.id ? 'Nouveau client' : 'Modifier le client'}
+                            </h2>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <h:outputLabel for="firstName" value="Prénom" styleClass="form-label" />
+                                <h:inputText id="firstName" 
+                                             value="#{clientBean.newClient.firstName}" 
+                                             styleClass="form-control"
+                                             required="true" />
+                            </div>
+
+                            <div class="form-group">
+                                <h:outputLabel for="lastName" value="Nom" styleClass="form-label" />
+                                <h:inputText id="lastName" 
+                                             value="#{clientBean.newClient.lastName}" 
+                                             styleClass="form-control"
+                                             required="true" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="email" value="Email" styleClass="form-label" />
+                            <h:inputText id="email" 
+                                         value="#{clientBean.newClient.email}" 
+                                         styleClass="form-control"
+                                         required="true" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="phone" value="Téléphone" styleClass="form-label" />
+                            <h:inputText id="phone" 
+                                         value="#{clientBean.newClient.phone}" 
+                                         styleClass="form-control"
+                                         required="true" />
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="address" value="Adresse" styleClass="form-label" />
+                            <h:inputTextarea id="address" 
+                                             value="#{clientBean.newClient.address}" 
+                                             styleClass="form-control"
+                                             rows="2" />
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                            <h:commandButton value="Annuler" 
+                                             action="#{clientBean.cancelDialog()}"
+                                             styleClass="btn btn-secondary"
+                                             immediate="true"
+                                             update="clientsForm" />
+                            <h:commandButton value="Enregistrer" 
+                                             action="#{clientBean.saveClient()}"
+                                             styleClass="btn btn-primary"
+                                             update="clientsForm" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

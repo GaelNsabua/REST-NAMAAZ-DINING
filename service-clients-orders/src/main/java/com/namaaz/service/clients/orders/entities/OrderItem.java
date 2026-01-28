@@ -1,5 +1,6 @@
 package com.namaaz.service.clients.orders.entities;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -20,6 +21,7 @@ public class OrderItem implements Serializable {
     @GeneratedValue
     private UUID id;
     
+    @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;

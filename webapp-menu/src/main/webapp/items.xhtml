@@ -80,7 +80,7 @@
                     <h:column>
                         <f:facet name="header">Prix</f:facet>
                         <h:outputText value="#{item.price}">
-                            <f:convertNumber type="currency" currencySymbol="€" />
+                            <f:convertNumber type="currency" currencySymbol="$" />
                         </h:outputText>
                     </h:column>
                     
@@ -173,7 +173,7 @@
                         </div>
 
                         <div class="form-group">
-                            <h:outputLabel for="price" value="Prix (€)" styleClass="form-label" />
+                            <h:outputLabel for="price" value="Prix ($)" styleClass="form-label" />
                             <h:inputText id="price" 
                                          value="#{menuItemBean.newMenuItem.price}" 
                                          styleClass="form-control"

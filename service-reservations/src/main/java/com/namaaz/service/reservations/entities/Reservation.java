@@ -49,9 +49,6 @@ public class Reservation {
     )
     private Set<RestaurantTable> tables = new HashSet<>();
     
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservationItem> items = new ArrayList<>();
-    
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
     
@@ -90,16 +87,6 @@ public class Reservation {
     
     public void removeTable(RestaurantTable table) {
         tables.remove(table);
-    }
-    
-    public void addItem(ReservationItem item) {
-        items.add(item);
-        item.setReservation(this);
-    }
-    
-    public void removeItem(ReservationItem item) {
-        items.remove(item);
-        item.setReservation(null);
     }
     
     // Getters et Setters
@@ -165,14 +152,6 @@ public class Reservation {
     
     public void setTables(Set<RestaurantTable> tables) {
         this.tables = tables;
-    }
-    
-    public List<ReservationItem> getItems() {
-        return items;
-    }
-    
-    public void setItems(List<ReservationItem> items) {
-        this.items = items;
     }
     
     public OffsetDateTime getCreatedAt() {

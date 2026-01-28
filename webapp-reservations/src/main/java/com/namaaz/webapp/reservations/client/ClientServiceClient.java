@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ClientServiceClient {
 
     private static final Logger LOGGER = Logger.getLogger(ClientServiceClient.class.getName());
-    private static final String BASE_URL = "http://localhost:8080/service-clients-orders-1.0/api";
+    private static final String BASE_URL = "http://localhost:8080/service-clients-orders/api";
     
     private final Client client;
     private final Jsonb jsonb;

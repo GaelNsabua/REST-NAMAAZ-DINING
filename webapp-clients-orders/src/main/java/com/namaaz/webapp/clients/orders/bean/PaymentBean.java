@@ -89,7 +89,7 @@ public class PaymentBean implements Serializable {
         items.add(new SelectItem("", "-- Sélectionner une commande --"));
         for (OrderDTO order : orders) {
             items.add(new SelectItem(order.getId(), 
-                "Commande #" + order.getId().substring(0, 8) + " - " + order.getTotalAmount() + "€"));
+                "Commande #" + order.getId().substring(0, 8) + " - " + order.getTotalAmount() + "$"));
         }
         return items;
     }

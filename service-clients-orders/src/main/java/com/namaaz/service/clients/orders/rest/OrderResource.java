@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +37,20 @@ public class OrderResource {
             order.setReservationId(request.reservationId);
             order.setTableId(request.tableId);
             
-            Order created = orderService.createOrder(order, request.items);
+            // Convertir OrderItemRequest en OrderItem
+            List<OrderItem> items = new ArrayList<>();
+            if (request.items != null) {
+                for (OrderItemRequest itemReq : request.items) {
+                    OrderItem item = new OrderItem(
+                        itemReq.menuItemId,
+                        itemReq.quantity,
+                        itemReq.unitPrice
+                    );
+                    items.add(item);
+                }
+            }
+            
+            Order created = orderService.createOrder(order, items);
             return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -239,7 +254,13 @@ public class OrderResource {
         public UUID clientId;
         public UUID reservationId;
         public UUID tableId;
-        public List<OrderItem> items;
+        public List<OrderItemRequest> items;
+    }
+    
+    public static class OrderItemRequest {
+        public UUID menuItemId;
+        public Integer quantity;
+        public BigDecimal unitPrice;
     }
     
     public static class UpdateStatusRequest {

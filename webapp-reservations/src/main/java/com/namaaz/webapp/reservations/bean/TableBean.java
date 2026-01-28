@@ -25,7 +25,7 @@ public class TableBean implements Serializable {
     private RestaurantTableDTO selectedTable;
     private RestaurantTableDTO newTable;
     private boolean showDialog;
-    private String filterStatus;
+    private String filterStatus = "ALL";
 
     @PostConstruct
     public void init() {
@@ -47,7 +47,7 @@ public class TableBean implements Serializable {
     }
 
     public void clearFilter() {
-        filterStatus = null;
+        filterStatus = "ALL";
         loadTables();
     }
 

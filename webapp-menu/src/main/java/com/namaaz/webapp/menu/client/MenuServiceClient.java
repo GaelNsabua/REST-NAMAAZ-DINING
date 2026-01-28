@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class MenuServiceClient {
 
     private static final Logger LOGGER = Logger.getLogger(MenuServiceClient.class.getName());
-    private static final String BASE_URL = "http://localhost:8080/service-menu-1.0/api";
+    private static final String BASE_URL = "http://localhost:8080/service-menu/api";
     
     private final Client client;
     private final Jsonb jsonb;

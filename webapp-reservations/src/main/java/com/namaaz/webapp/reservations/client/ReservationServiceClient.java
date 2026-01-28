@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ReservationServiceClient {
 
     private static final Logger LOGGER = Logger.getLogger(ReservationServiceClient.class.getName());
-    private static final String BASE_URL = "http://localhost:8080/service-reservations-1.0/api";
+    private static final String BASE_URL = "http://localhost:8080/service-reservations/api";
     
     private final Client client;
     private final Jsonb jsonb;

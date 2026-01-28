@@ -1,0 +1,16 @@
+com\namaaz\webapp\reservations\bean\TableBean.class
+com\namaaz\webapp\reservations\client\ReservationServiceClient$4.class
+com\namaaz\webapp\reservations\bean\ReservationBean.class
+com\namaaz\webapp\reservations\client\ReservationServiceClient$3.class
+com\namaaz\webapp\reservations\client\ReservationServiceClient.class
+com\namaaz\webapp\reservations\client\ClientServiceClient$1.class
+com\namaaz\webapp\reservations\dto\RestaurantTableDTO.class
+com\namaaz\webapp\reservations\dto\ClientDTO.class
+com\namaaz\webapp\reservations\client\MenuServiceClient.class
+com\namaaz\webapp\reservations\client\ReservationServiceClient$1.class
+com\namaaz\webapp\reservations\dto\ReservationDTO.class
+com\namaaz\webapp\reservations\client\ClientServiceClient.class
+com\namaaz\webapp\reservations\bean\DashboardBean.class
+com\namaaz\webapp\reservations\client\MenuServiceClient$1.class
+com\namaaz\webapp\reservations\client\ReservationServiceClient$2.class
+com\namaaz\webapp\reservations\dto\MenuItemDTO.class
